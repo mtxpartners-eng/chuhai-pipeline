@@ -1,80 +1,71 @@
 # Contributing to chuhai-pipeline
 
-Welcome. This repo coordinates a single-operator B2B buyer-acquisition pipeline plus a
-sales-facing webUI and a Cloudflare-hosted product site. The collaboration model below
-applies to **the current (旧项目稳定期) phase**. New projects spun out of this repo
-(e.g. the Apollo/Clay-based pipeline that will replace Xiaoman) will adopt a distributed
-ownership model and update this document.
+Thanks for helping maintain Chuhai Pipeline. This repository contains the outbound
+buyer-acquisition pipeline, the sales feedback WebUI, the Redvia product site, and the
+Cloudflare tracking layer.
 
-> **Current status (2026-06-11):** Devcontainer is planned (see
-> [`docs/superpowers/plans/2026-06-04-foundation-collab-scaffolding.md`](docs/superpowers/plans/2026-06-04-foundation-collab-scaffolding.md))
-> but not yet built. For now, run locally in a Python 3.11 venv + Node 20.
+## Before You Start
 
-## Before you start
+1. Read [`README.md`](README.md) and [`ARCHITECTURE.md`](ARCHITECTURE.md) to understand
+   the project scope and data flow.
+2. Create a Python 3.11 virtual environment and install the root requirements:
 
-1. Read [`ARCHITECTURE.md`](ARCHITECTURE.md) to understand the system topology.
-2. Clone the repo, create a Python 3.11 venv, `pip install -r requirements.txt`.
-   `cd cloudflare && npm install` for the Worker side.
-3. Ask the maintainers (@mtxpartners-eng/maintainers) for secrets. Until Vaultwarden is up, secrets
-   are handed over out-of-band — never in GitHub Issues, PR descriptions, or chat
-   plaintext.
+   ```bash
+   python -m venv .venv
+   source .venv/bin/activate
+   pip install -r requirements.txt
+   ```
 
-## What you can edit without coordination
+3. Install the Worker dependencies when changing `cloudflare/`:
 
-| Path | Who can review |
-|---|---|
-| `webui/` | any collaborator with write access |
-| `redvia-site/` | any collaborator |
-| `docs/`, `docs/architecture/` | any collaborator |
-| Helper scripts (`scripts/`, `tools/`) | any collaborator |
-| `requirements.txt`, top-level configs (`pyproject.toml`, `.gitignore`) | any collaborator |
+   ```bash
+   cd cloudflare
+   npm install
+   ```
 
-## What requires @mtxpartners-eng/maintainers review
+4. Request production credentials from a maintainer through the approved private
+   channel. Never place secrets in issues, pull requests, commits, or chat transcripts.
 
-These paths are owned by the maintainers per [`.github/CODEOWNERS`](.github/CODEOWNERS):
+## Pull Request Flow
 
-- `pipeline.py` — orchestrator, money path
-- `xiaoman_playwright.py` — login-state-bound scraper, fragile to small changes
-- `llm_judge.py` — LLM provider abstraction; cross-cuts step 4 and step 5
-- `send_outreach.py` — outbound email; SMTP creds + tracking integration
-- `cloudflare/` — Worker + D1 schema for tracking
-- `.env.example`, `.github/workflows/`, `.github/CODEOWNERS` itself
+1. Branch from `main` using a short name such as `feat/<topic>` or `fix/<topic>`.
+2. Keep commits focused and reviewable.
+3. Run the relevant checks before opening a pull request.
+4. Open the pull request with a summary of the change, screenshots for UI updates, and
+   the commands you ran.
+5. Wait for review from the appropriate owner before merging protected paths.
 
-If your change touches one of these, expect a slower review cycle. Open an issue first
-to surface intent before writing code.
+## Review Ownership
 
-## Pull request flow
+Most documentation, WebUI, and product-site changes can be reviewed by any collaborator
+with write access. Changes to the following areas require maintainer review:
 
-1. Branch off `main`. Name your branch like `feat/<short>` or `fix/<short>`.
-2. Make focused commits. Frequent small commits are preferred over one mega-commit.
-3. Open a PR. The CI workflow runs ruff + pytest + a wrangler dry-run.
-4. If CI is red, fix it before requesting review.
-5. Wait for review from the appropriate owner. A non-CODEOWNERS reviewer approval is
-   enough for non-protected paths; CODEOWNERS approval is required for protected paths.
-6. Squash-merge when approved.
+- `pipeline.py`
+- `xiaoman_playwright.py`
+- `llm_judge.py`
+- `send_outreach.py`
+- `cloudflare/`
+- `.env.example`
+- `.github/workflows/`
+- `.github/CODEOWNERS`
 
-## Running pieces locally
+See [`.github/CODEOWNERS`](.github/CODEOWNERS) for the enforced ownership rules.
+
+## Local Checks
 
 ```bash
-pytest webui/                                 # run all webui tests
-ruff check .                                  # lint
-cd cloudflare && npx wrangler dev             # Worker local preview
-python pipeline.py runs/<dir>/01_keywords.md --skip-step3   # pipeline without Xiaoman
+ruff check .
+pytest webui/
+cd cloudflare && npx wrangler deploy --dry-run --outdir=/tmp/worker-bundle
 ```
 
-Xiaoman step 3 (`xiaoman_playwright.py`) requires a logged-in Chromium profile on the
-maintainer's Mac and cannot run in CI. If your work depends on step-3 output, ask the
-maintainer to run it and push fresh `runs/<dir>/03_xiaoman.xlsx` to a shared location.
+Step 3 of the pipeline (`xiaoman_playwright.py`) requires an authenticated Chromium
+profile and is not expected to run in CI. Use `--skip-step3` when testing the rest of
+the pipeline locally.
 
-## Operational notes
+## Repository Hygiene
 
-- `工作日志/`, `会议/`, `Learning materials/`, `独立站产品素材/` are gitignored and
-  contain internal notes. Do not move content from them into tracked files without
-  scrubbing.
-- Architecture decisions belong in `docs/architecture/000N-*.md` (ADRs), not in commit
-  messages or chat logs.
-
-## Coding agents
-
-If you're a coding agent (Codex, Claude Code, etc.), read [`AGENTS.md`](AGENTS.md)
-before doing anything else.
+- Keep local datasets, exports, credentials, and operating notes out of the repository.
+- Commit only scrubbed sample data and documentation intended for collaborators.
+- Keep architecture decisions and long-term design rationale in versioned docs rather
+  than in ad hoc notes.
