@@ -1,5 +1,5 @@
 """
-Parse a keyword markdown file produced by feeding step1.md to Claude web.
+Parse a keyword planning markdown file.
 
 Expected format (case-insensitive section headers, leading "# " or "## "):
 
