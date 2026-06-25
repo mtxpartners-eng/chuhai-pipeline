@@ -1,7 +1,5 @@
 # Files that require @mtxpartners-eng/maintainers review.
 # Other files can be reviewed by any collaborator with write access.
-# Phase note (spec §1): this is the old-project stable-period model;
-# new projects (post-Apollo) will adopt distributed ownership.
 
 pipeline.py             @mtxpartners-eng/maintainers
 xiaoman_playwright.py   @mtxpartners-eng/maintainers
