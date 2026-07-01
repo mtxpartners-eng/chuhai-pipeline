@@ -7,8 +7,10 @@ exclude = [
   "runs",
   "backups",
   "redvia-site/assets",
-  "工作日志",
-  "会议",
+  "private",
+  "local-notes",
+  "source-materials",
+  "meeting-notes",
 ]
 
 [tool.ruff.lint]

@@ -1,10 +1,10 @@
 # Redvia Tracking Worker
 
-This is the first-party tracking layer for the static Redvia site in `../web_claude`.
+This is the first-party tracking layer for the static Redvia site in `../redvia-site`.
 
 ## What It Provides
 
-- Static asset hosting for `web_claude/` through Cloudflare Workers assets.
+- Static asset hosting for `redvia-site/` through Cloudflare Workers assets.
 - `GET /t/:token` and `GET /c/:token`: email tracking links, D1 attribution, first-party cookies, redirect to the site or a product page.
 - `POST /api/identify`: supports landing URLs like `/?t=<token>`.
 - `POST /api/event`: page views, product views, certificate opens, CTA clicks, mailto/tel clicks, contact form submits, and dwell events.
